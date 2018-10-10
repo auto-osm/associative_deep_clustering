@@ -107,10 +107,9 @@ import numpy as np
 
 np.core.arrayprint._line_width = 150
 from semisup.backend import apply_envelope
-from backend import apply_envelope
 import semisup
-from tensorflow.contrib.data import Dataset
-from augment import apply_augmentation
+from tensorflow.data import Dataset
+from semisup.augment import apply_augmentation
 
 
 def main(_):
@@ -374,7 +373,9 @@ def main(_):
             reg_loss, trafo_loss = sess.run(
                     [train_op, train_op_sat, model.train_loss, summary_op, t_sup_emb, t_unsup_emb, t_reg_unsup_emb,
                      model.estimate_error, model.p_ab,
-                     model.p_ba, model.p_aba, model.reg_loss_aba, t_trafo_loss], {**extra_feed_dict, **feed_dict})
+                     model.p_ba, model.p_aba, model.reg_loss_aba,
+                     t_trafo_loss], _combine_feed_dicts([extra_feed_dict,
+                                                        feed_dict]))
 
             if FLAGS.kmeans_sat_thresh is not None and step % 200 == 0 and not kmeans_initialized:
                 sat_score = semisup.calc_sat_score(unsup_emb, reg_unsup_emb)
@@ -499,6 +500,14 @@ def main(_):
         print('@@k_score:%.4f' % k_score)
         print('@@svm_score:%.4f' % svm_test_score)
 
+
+# get over fact we do not use python 3.5+
+def _combine_feed_dicts(dicts):
+    new_dict = {}
+    for d in dicts:
+        for k in d:
+            new_dict[k] = d[k]
+    return new_dict
 
 if __name__ == '__main__':
     app.run()
