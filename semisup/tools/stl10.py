@@ -27,6 +27,7 @@ import numpy as np
 from tensorflow.python.platform import gfile
 from tensorflow.python.platform import tf_logging as logging
 from semisup.tools import data_dirs
+import os
 
 DATADIR = data_dirs.stl10
 NUM_LABELS = 10
@@ -44,14 +45,15 @@ def get_data(name, max_num=20000):
       split.
     """
     if name == 'train':
-        return extract_images(DATADIR + 'train_X.bin',
+        return extract_images(os.path.join(DATADIR, 'train_X.bin'),
                               IMAGE_SHAPE), extract_labels(DATADIR + 'train_y.bin')
     elif name == 'test':
-        return extract_images(DATADIR + 'test_X.bin',
+        return extract_images(os.path.join(DATADIR, 'test_X.bin'),
                               IMAGE_SHAPE), extract_labels(DATADIR + 'test_y.bin')
 
     elif name == 'unlabeled':
-        res = extract_images(DATADIR + 'unlabeled_X.bin', IMAGE_SHAPE)
+        res = extract_images(os.path.join(DATADIR, 'unlabeled_X.bin'),
+                                          IMAGE_SHAPE)
         num_images = len(res)
         if num_images > max_num:
             rng = np.random.RandomState()
