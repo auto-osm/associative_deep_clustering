@@ -111,11 +111,13 @@ import semisup
 from tensorflow.contrib.data import Dataset
 from semisup.augment import apply_augmentation
 from semisup.util.combine_dicts import combine_dicts
+
 import sys
 from datetime import datetime
+import pickle
+import os
 
 def main(_):
-    FLAGS.eval_interval = 1000  # todo remove
     if FLAGS.logdir is not None:
         if FLAGS.taskid is not None:
             FLAGS.logdir = FLAGS.logdir + '/t_' + str(FLAGS.taskid)
@@ -329,6 +331,9 @@ def main(_):
         sess.run(iterator.initializer, feed_dict={t_images: train_images})
         sess.run(reg_iterator.initializer, feed_dict={t_images: train_images})
 
+        acc_list_path = os.path.join(FLAGS.logdif, "acc_list")
+        acc_list = []
+
         # optional: init from autoencoder
         if FLAGS.restore_checkpoint is not None:
             # logit fc layer cannot be restored
@@ -340,6 +345,9 @@ def main(_):
 
             restorer = tf.train.Saver(var_list=variables)
             restorer.restore(sess, FLAGS.restore_checkpoint)
+
+            acc_list = pickle.load(acc_list_path)
+            assert(isinstance(acc_list, list))
 
         extra_feed_dict = {}
 
@@ -355,9 +363,6 @@ def main(_):
         kmeans_initialized = False
 
         for step in range(FLAGS.max_steps):
-            if step < 10:
-                print("at step: %d" % step)
-                sys.stdout.flush()
 
             import time
             start = time.time()
@@ -430,7 +435,11 @@ def main(_):
             if FLAGS.svm_test_interval is not None and step % FLAGS.svm_test_interval == 0 and step > 0:
                 svm_test_score, _ = model.train_and_eval_svm(c_train_imgs, train_labels_svm, c_test_imgs, test_labels,
                                                              sess, num_samples=5000)
+                # this is training svm on raw input (training) images (?)
                 print('svm score:', svm_test_score)
+
+                # this is training svm on learned embeddings of (train and
+                # test) images (?)
                 test_pred = model.classify(c_test_imgs, sess)
                 train_pred = model.classify(c_train_imgs, sess)
                 svm_test_score, _ = model.train_and_eval_svm_on_preds(train_pred, train_labels_svm, test_pred, test_labels,
@@ -440,10 +449,8 @@ def main(_):
             if step % FLAGS.decay_steps == 0 and step > 0:
                 learning_rate_ = learning_rate_ * FLAGS.decay_factor
 
-            #if step == 0 or (step + 1) % FLAGS.eval_interval == 0 or step ==
-            if step < 10 or step % 100 == 0:
-                #  99:
-                print('Step: %d' % step)
+            if step == 0 or (step + 1) % FLAGS.eval_interval == 0:
+                print('Step: %d -----------------------' % step)
                 print('trafo loss', trafo_loss)
                 print('reg loss' , reg_loss)
                 print('Time for step', time.time() - start)
@@ -453,14 +460,20 @@ def main(_):
 
                 nmi = semisup.calc_nmi(test_pred, test_labels)
 
+                # the real acc
                 conf_mtx, score = semisup.calc_correct_logit_score(test_pred, test_labels, num_labels)
                 print(conf_mtx)
-                print('Test error: %.2f %%' % (100 - score * 100))
+                print('Test acc: %.5f %%' % score)
                 print('Test NMI: %.2f %%' % (nmi * 100))
                 print('Train loss: %.2f ' % train_loss)
                 print('Train loss no fc: %.2f ' % sat_loss)
                 print('Reg loss aba: %.2f ' % reg_loss)
                 print('Estimated Accuracy: %.2f ' % estimated_error)
+
+                # save score
+                acc_list.append(score)
+                with open(acc_list_path, "wb") as acc_list_f:
+                    pickle.dump(acc_list, acc_list_f)
 
                 sat_score = semisup.calc_sat_score(unsup_emb, reg_unsup_emb)
                 print('sat accuracy', sat_score)
@@ -473,7 +486,7 @@ def main(_):
                 print('embedding norm', np.mean(e_n))
 
                 k_conf_mtx, k_score = semisup.do_kmeans(embs, test_labels, num_labels)
-                print(k_conf_mtx)
+                #print(k_conf_mtx)
                 print('k means score:', k_score)  # sometimes that kmeans is better than the logits
 
                 if FLAGS.logdir is not None:
@@ -502,7 +515,6 @@ def main(_):
 
                 if dataset == 'mnist' and step == 6999 and score < 0.25:
                   break
-
 
         svm_test_score, _ = model.train_and_eval_svm(c_train_imgs, train_labels_svm, c_test_imgs, test_labels, sess,
                                                      num_samples=10000)
