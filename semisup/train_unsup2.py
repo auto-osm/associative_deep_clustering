@@ -484,6 +484,9 @@ def main(_):
                 with open(acc_lists_path, "wb") as acc_lists_f:
                     pickle.dump(acc_lists, acc_lists_f)
 
+                with open(acc_lists_path + ".txt", "wb") as acc_lists_txt_f:
+                    acc_lists_txt_f.write(str(acc_lists))
+
                 if FLAGS.logdir is not None:
                     sum_values = {
                         'test score': score,
