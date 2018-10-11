@@ -428,11 +428,10 @@ def main(_):
             if FLAGS.svm_test_interval is not None and step % FLAGS.svm_test_interval == 0 and step > 0:
                 svm_test_score, _ = model.train_and_eval_svm(c_train_imgs, train_labels_svm, c_test_imgs, test_labels,
                                                              sess, num_samples=5000)
-                # this is training svm on raw input (training) images (?)
+                # this is training svm on raw input (train) images?
                 print('svm score:', svm_test_score)
 
-                # this is training svm on learned embeddings of (train and
-                # test) images (?)
+                # this is training svm on learned embeddings of (train) images
                 test_pred = model.classify(c_test_imgs, sess)
                 train_pred = model.classify(c_train_imgs, sess)
                 svm_test_score, _ = model.train_and_eval_svm_on_preds(train_pred, train_labels_svm, test_pred, test_labels,
@@ -459,8 +458,8 @@ def main(_):
                 acc_lists["score"].append(score)
 
                 #print(conf_mtx)
-                print('Test acc: %.5f %%' % score)
-                print('Test NMI: %.2f %%' % (nmi * 100))
+                print('Test acc: %.2f %%' % (score * 100.))
+                print('Test NMI: %.2f %%' % (nmi * 100.))
                 print('Train loss: %.2f ' % train_loss)
                 print('Train loss no fc: %.2f ' % sat_loss)
                 print('Reg loss aba: %.2f ' % reg_loss)
