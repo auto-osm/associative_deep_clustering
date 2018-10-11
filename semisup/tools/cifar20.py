@@ -26,6 +26,10 @@ def get_data(name):
   print(images.shape)
   print(labels.__class__)
   print(labels.shape)
+  print(images.min())
+  print(images.max())
+  print(labels.min())
+  print(labels.max())
   exit(1)
   return images, labels
 
