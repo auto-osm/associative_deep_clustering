@@ -193,6 +193,9 @@ def main(_):
 
     graph = tf.Graph()
     with graph.as_default():
+        print("with graph.as_default...")
+        sys.stdout.flush()
+
         t_images = tf.placeholder("float", shape=[None] + image_shape)
 
         dataset = Dataset.from_tensor_slices(t_images)
@@ -318,6 +321,9 @@ def main(_):
             saver = tf.train.Saver()
 
     with tf.Session(graph=graph) as sess:
+        print("with tf.Session(graph=graph) as sess...")
+        sys.stdout.flush()
+
         tf.global_variables_initializer().run()
 
         sess.run(iterator.initializer, feed_dict={t_images: train_images})
@@ -349,6 +355,10 @@ def main(_):
         kmeans_initialized = False
 
         for step in range(FLAGS.max_steps):
+            if step < 10:
+                print("at step: %d" % step)
+                sys.stdout.flush()
+
             import time
             start = time.time()
             if FLAGS.init_with_kmeans:
@@ -431,7 +441,7 @@ def main(_):
                 learning_rate_ = learning_rate_ * FLAGS.decay_factor
 
             #if step == 0 or (step + 1) % FLAGS.eval_interval == 0 or step ==
-            if True:
+            if step < 10 or step % 100 == 0:
                 #  99:
                 print('Step: %d' % step)
                 print('trafo loss', trafo_loss)
