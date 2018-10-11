@@ -121,10 +121,14 @@ def main(_):
         else:
             FLAGS.logdir = FLAGS.logdir + '/t_' + str(random.randint(0,99999))
 
+    """
     if FLAGS.dataset == "mnist":
         import semisup.tools.mnist as dataset_tools
     else:
         assert(False)
+
+    """
+    dataset_tools = import_module('semisup.tools.' + FLAGS.dataset)
 
     NUM_LABELS = dataset_tools.NUM_LABELS
     num_labels = NUM_LABELS
