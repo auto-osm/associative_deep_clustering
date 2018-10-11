@@ -26,7 +26,7 @@ from __future__ import print_function
 import numpy as np
 from tensorflow.python.platform import gfile
 from tensorflow.python.platform import tf_logging as logging
-from tools import data_dirs
+from semisup.tools import data_dirs
 
 DATADIR = data_dirs.stl10
 NUM_LABELS = 10
