@@ -46,10 +46,12 @@ def get_data(name, max_num=20000):
     """
     if name == 'train':
         return extract_images(os.path.join(DATADIR, 'train_X.bin'),
-                              IMAGE_SHAPE), extract_labels(DATADIR + 'train_y.bin')
+                              IMAGE_SHAPE), \
+               extract_labels(os.path.join(DATADIR, 'train_y.bin'))
     elif name == 'test':
         return extract_images(os.path.join(DATADIR, 'test_X.bin'),
-                              IMAGE_SHAPE), extract_labels(DATADIR + 'test_y.bin')
+                              IMAGE_SHAPE), \
+               extract_labels(os.path.join(DATADIR, 'test_y.bin'))
 
     elif name == 'unlabeled':
         res = extract_images(os.path.join(DATADIR, 'unlabeled_X.bin'),
