@@ -30,6 +30,8 @@ def get_data(name):
   print(images.max())
   print(labels.min())
   print(labels.max())
+  print(images[0, 0, 0, 0].__class__)
+  print(labels[0].__class__)
   exit(1)
   return images, labels
 
