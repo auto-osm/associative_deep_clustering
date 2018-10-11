@@ -27,7 +27,7 @@ from __future__ import print_function
 import gzip
 
 import numpy as np
-import data_dirs
+from semisup.tools import data_dirs
 
 DATADIR = data_dirs.mnist
 
