@@ -204,6 +204,7 @@ def main(_):
 
         return image
 
+    # setup the graph ---------------------------------------------------------
     graph = tf.Graph()
     with graph.as_default():
         t_images = tf.placeholder("float", shape=[None] + image_shape)
@@ -230,6 +231,7 @@ def main(_):
         dataset = dataset.repeat().batch(FLAGS.unsup_batch_size)
         augmented_set = augmented_set.repeat().batch(FLAGS.unsup_batch_size * rf)
 
+        # specify what the iterator actually is
         iterator = dataset.make_initializable_iterator()
         reg_iterator = augmented_set.make_initializable_iterator()
 
@@ -330,9 +332,11 @@ def main(_):
             summary_writer = tf.summary.FileWriter(FLAGS.logdir, graph)
             saver = tf.train.Saver()
 
+    # Run the graph ------------------------------------------------------------
     with tf.Session(graph=graph) as sess:
         tf.global_variables_initializer().run()
 
+        # initialise the iterator that provides t_images above
         sess.run(iterator.initializer, feed_dict={t_images: train_images})
         sess.run(reg_iterator.initializer, feed_dict={t_images: train_images})
 
