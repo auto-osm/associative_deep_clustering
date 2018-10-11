@@ -39,33 +39,45 @@ flags.DEFINE_integer('eval_interval', 1000,
                      'Number of steps between evaluations.')
 
 flags.DEFINE_integer('svm_test_interval', 10000, 'Number of steps between SVM evaluations.')
-flags.DEFINE_float('learning_rate', 2e-4, 'Initial learning rate.')
-
-flags.DEFINE_integer('warmup_steps', 1000, 'Warmup steps.')
-flags.DEFINE_float('decay_factor', 0.33, 'Learning rate decay factor.')
-flags.DEFINE_float('decay_steps', 5000, 'Learning rate decay interval in steps.')
-
-flags.DEFINE_integer('reg_warmup_steps', 1, 'Warmup steps for regularization walker.')
-flags.DEFINE_integer('num_unlabeled_images', 0, 'How many images to use from the unlabeled set.')
-
-flags.DEFINE_float('visit_weight_base', 0.5, 'Weight for visit loss.')
-flags.DEFINE_float('rvisit_weight', 1, 'Weight for reg visit loss.')
-flags.DEFINE_float('reg_decay_factor', 0.2, 'Decay reg weight after kmeans initialization')
-
-flags.DEFINE_float('cluster_association_weight', 1.0, 'Weight for cluster associations.')
-flags.DEFINE_float('reg_association_weight', 1.0, 'Weight for reg associations.')
-flags.DEFINE_float('trafo_weight', 0, 'Weight for 4) transformation loss.')
+flags.DEFINE_float('learning_rate', 0.0008, 'Initial learning rate.')
 
 flags.DEFINE_float('beta1', 0.8, 'beta1 parameter for adam')
 flags.DEFINE_float('beta2', 0.9, 'beta2 parameter for adam')
 
-flags.DEFINE_float('l1_weight', 0.0002, 'Weight for l1 embeddding regularization')
-flags.DEFINE_float('norm_weight', 0.0002, 'Weight for embedding normalization')
+flags.DEFINE_integer('warmup_steps', 2000, 'Warmup steps.')
+flags.DEFINE_float('decay_factor', 0.33, 'Learning rate decay factor.')
+flags.DEFINE_float('decay_steps', 10000, 'Learning rate decay interval in '
+                                        'steps.')
+
+flags.DEFINE_integer('reg_warmup_steps', 1, 'Warmup steps for regularization walker.')
+flags.DEFINE_integer('num_unlabeled_images', 0, 'How many images to use from the unlabeled set.')
+
+# "visit weights", association, specified in paper
+flags.DEFINE_float('visit_weight_base', 0.3, 'Weight for visit loss.')
+flags.DEFINE_float('rvisit_weight', 0.3, 'Weight for reg visit loss.')
+
+flags.DEFINE_float('reg_decay_factor', 0.2, 'Decay reg weight after kmeans initialization')
+
+# alpha, L_assoc c
+flags.DEFINE_float('cluster_association_weight', 1.0, 'Weight for cluster associations.')
+# beta, L_assoc aug
+flags.DEFINE_float('reg_association_weight', 0.9, 'Weight for reg '
+                                                  'associations.')
+# delta, L_trafo
+flags.DEFINE_float('trafo_weight', 0.00002, 'Weight for 4) transformation '
+                                            'loss.')
+# gamma, L_norm?
+flags.DEFINE_float('l1_weight', 0.00001, 'Weight for l1 embeddding '
+                                        'regularization')
+flags.DEFINE_float('norm_weight', 0.00001, 'Weight for embedding normalization')
+
+# this is used for supervised loss, L_class?
 flags.DEFINE_float('logit_weight', 0.5, 'Weight for logit loss')
 
 flags.DEFINE_float('walker_weight', 1.0, 'Weight for walker loss.')
 flags.DEFINE_float('rwalker_weight', 1.0, 'Weight for reg walker loss.')
-flags.DEFINE_bool('normalize_input', True, 'Normalize input images to be between -1 and 1. Requires tanh autoencoder')
+flags.DEFINE_bool('normalize_input', True, 'Normalize input images to be '
+                                            'between -1 and 1. Requires tanh autoencoder')
 
 flags.DEFINE_integer('max_steps', 200000, 'Number of training steps.')
 flags.DEFINE_integer('emb_size', 128, 'Dimension of embedding space')
