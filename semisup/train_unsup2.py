@@ -111,7 +111,8 @@ import semisup
 from tensorflow.contrib.data import Dataset
 from semisup.augment import apply_augmentation
 from semisup.util.combine_dicts import combine_dicts
-
+import sys
+from datetime import datetime
 
 def main(_):
     FLAGS.eval_interval = 1000  # todo remove
@@ -429,12 +430,16 @@ def main(_):
             if step % FLAGS.decay_steps == 0 and step > 0:
                 learning_rate_ = learning_rate_ * FLAGS.decay_factor
 
-            if step == 0 or (step + 1) % FLAGS.eval_interval == 0 or step == 99:
+            #if step == 0 or (step + 1) % FLAGS.eval_interval == 0 or step ==
+            if True:
+                #  99:
                 print('Step: %d' % step)
                 print('trafo loss', trafo_loss)
                 print('reg loss' , reg_loss)
                 print('Time for step', time.time() - start)
                 test_pred = model.classify(c_test_imgs, sess, extra_feed_dict).argmax(-1)
+                print(datetime.now())
+                sys.stdout.flush()
 
                 nmi = semisup.calc_nmi(test_pred, test_labels)
 
@@ -477,6 +482,8 @@ def main(_):
                                 value=[tf.Summary.Value(tag=key, simple_value=value)])
                         summary_writer.add_summary(summary, step)
 
+                print(datetime.now())
+                sys.stdout.flush()
                 # early stopping to save some time
                 if step == 34999 and score < 0.45:
                   break
