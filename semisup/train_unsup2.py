@@ -118,11 +118,10 @@ import pickle
 import os
 
 def main(_):
-    if FLAGS.logdir is not None:
-        if FLAGS.taskid is not None:
-            FLAGS.logdir = FLAGS.logdir + '/t_' + str(FLAGS.taskid)
-        else:
-            FLAGS.logdir = FLAGS.logdir + '/t_' + str(random.randint(0,99999))
+    assert(FLAGS.logdir is not None)
+    assert(FLAGS.taskid is not None)
+
+    FLAGS.logdir = os.path.join(FLAGS.logdir, str(FLAGS.taskid))
 
     """
     if FLAGS.dataset == "mnist":
@@ -195,9 +194,6 @@ def main(_):
 
     graph = tf.Graph()
     with graph.as_default():
-        print("with graph.as_default...")
-        sys.stdout.flush()
-
         t_images = tf.placeholder("float", shape=[None] + image_shape)
 
         dataset = Dataset.from_tensor_slices(t_images)
@@ -323,15 +319,12 @@ def main(_):
             saver = tf.train.Saver()
 
     with tf.Session(graph=graph) as sess:
-        print("with tf.Session(graph=graph) as sess...")
-        sys.stdout.flush()
-
         tf.global_variables_initializer().run()
 
         sess.run(iterator.initializer, feed_dict={t_images: train_images})
         sess.run(reg_iterator.initializer, feed_dict={t_images: train_images})
 
-        acc_lists_path = os.path.join(FLAGS.logdif, "acc_list")
+        acc_lists_path = os.path.join(FLAGS.logdir, "acc_lists.pickle")
         acc_lists = {"score": [], "k_score": [], "svm_test_score": []}
 
         # optional: init from autoencoder
