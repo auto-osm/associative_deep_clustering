@@ -121,8 +121,11 @@ def main(_):
         else:
             FLAGS.logdir = FLAGS.logdir + '/t_' + str(random.randint(0,99999))
 
-    dataset_tools = import_module('tools.' + FLAGS.dataset)
-
+    if FLAGS.dataset == "mnist":
+        import tools.mnist as dataset_tools
+    else:
+        assert(False)
+        
     NUM_LABELS = dataset_tools.NUM_LABELS
     num_labels = NUM_LABELS
     IMAGE_SHAPE = dataset_tools.IMAGE_SHAPE
