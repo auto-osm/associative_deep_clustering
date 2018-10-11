@@ -108,7 +108,7 @@ import numpy as np
 np.core.arrayprint._line_width = 150
 from semisup.backend import apply_envelope
 import semisup
-from tensorflow.data import Dataset
+from tensorflow.contrib.data import Dataset
 from semisup.augment import apply_augmentation
 from semisup.util.combine_dicts import combine_dicts
 
