@@ -5,6 +5,7 @@ import os
 from semisup.tools import data_dirs
 from six.moves import cPickle
 import sys
+import numpy as np
 
 # this file is based on mnist.py
 
@@ -46,6 +47,7 @@ def extract_cifar(path, label_key):
 
   data = data.reshape(data.shape[0], 3, 32, 32)
   data = data.transpose(0, 2, 3, 1) # channels last like in mnist.py
+  labels = np.array(labels)
   return data, labels
 
 # Dataset specific augmentation parameters.
