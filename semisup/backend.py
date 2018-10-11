@@ -27,6 +27,7 @@ from scipy.optimize import linear_sum_assignment
 from sklearn import svm
 from sklearn.cluster import KMeans
 from sklearn.metrics.cluster import normalized_mutual_info_score
+from semisup.util.combine_dicts import combine_dicts
 
 NO_FC_COLLECTION = "NO_FC_COLLECTION"
 
@@ -646,7 +647,8 @@ class SemisupModel(object):
         emb = []
         for i in range(0, len(images), batch_size):
             feed_dict = {self.test_in: images[i: i + batch_size]}
-            emb.append(endpoint.eval({**extra_feed_dict, **feed_dict},
+            emb.append(endpoint.eval(combine_dicts([extra_feed_dict,
+                                                        feed_dict]),
                                      session=sess))
         return np.concatenate(emb)
 

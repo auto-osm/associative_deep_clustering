@@ -110,6 +110,7 @@ from semisup.backend import apply_envelope
 import semisup
 from tensorflow.data import Dataset
 from semisup.augment import apply_augmentation
+from semisup.util.combine_dicts import combine_dicts
 
 
 def main(_):
@@ -374,7 +375,7 @@ def main(_):
                     [train_op, train_op_sat, model.train_loss, summary_op, t_sup_emb, t_unsup_emb, t_reg_unsup_emb,
                      model.estimate_error, model.p_ab,
                      model.p_ba, model.p_aba, model.reg_loss_aba,
-                     t_trafo_loss], _combine_feed_dicts([extra_feed_dict,
+                     t_trafo_loss], combine_dicts([extra_feed_dict,
                                                         feed_dict]))
 
             if FLAGS.kmeans_sat_thresh is not None and step % 200 == 0 and not kmeans_initialized:
@@ -499,15 +500,6 @@ def main(_):
         print('@@emb_norm:%.4f' % np.mean(e_n))
         print('@@k_score:%.4f' % k_score)
         print('@@svm_score:%.4f' % svm_test_score)
-
-
-# get over fact we do not use python 3.5+
-def _combine_feed_dicts(dicts):
-    new_dict = {}
-    for d in dicts:
-        for k in d:
-            new_dict[k] = d[k]
-    return new_dict
 
 if __name__ == '__main__':
     app.run()
