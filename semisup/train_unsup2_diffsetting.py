@@ -442,6 +442,7 @@ def main(_):
                 rvisit_weight_ *= FLAGS.reg_decay_factor
 
             if FLAGS.svm_test_interval is not None and step % FLAGS.svm_test_interval == 0 and step > 0:
+                print('Step: %d -----------------------' % step)
                 svm_test_score, _ = model.train_and_eval_svm(c_train_imgs, train_labels_svm, c_test_imgs, test_labels,
                                                              sess, num_samples=5000)
                 # this is training svm on raw input (train) images?
@@ -521,6 +522,7 @@ def main(_):
 
                 print(datetime.now())
                 sys.stdout.flush()
+                """
                 # early stopping to save some time
                 if step == 34999 and score < 0.45:
                   break
@@ -529,6 +531,7 @@ def main(_):
 
                 if dataset == 'mnist' and step == 6999 and score < 0.25:
                   break
+                """
 
         svm_test_score, _ = model.train_and_eval_svm(c_train_imgs, train_labels_svm, c_test_imgs, test_labels, sess,
                                                      num_samples=10000)
