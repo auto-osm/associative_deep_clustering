@@ -186,6 +186,8 @@ def main(_):
         # same in our code and deepcluster
         train_images = np.vstack([train_images, test_images])
         test_images = np.vstack([train_images, test_images])
+        print(train_labels_svm.shape)
+        print(test_images.shape)
         test_labels = np.vstack([train_labels_svm, test_labels])
 
     #if FLAGS.dataset == 'svhn' and FLAGS.architecture == 'resnet_cifar_model':
