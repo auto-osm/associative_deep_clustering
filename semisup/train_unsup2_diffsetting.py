@@ -175,9 +175,18 @@ def main(_):
         train_images = (train_images - 128.) / 128.
         test_images = (test_images - 128.) / 128.
 
+    # the training and test sets for svm are distinct no matter if use_test set
+    train_images_svm = train_images
+    # train_labels_svm already fine
+    test_images_svm = test_images
+    test_labels_svm = test_labels
     if FLAGS.use_test:
+        # only for unsupervised part - in unsupervised training
+        # no distinction between training and testing sets
+        # same in our code and deepcluster
         train_images = np.vstack([train_images, test_images])
-        train_labels_svm = np.hstack([train_labels_svm, test_labels])
+        test_images = np.vstack([train_images, test_images])
+        test_labels = np.vstack([train_labels_svm, test_labels])
 
     #if FLAGS.dataset == 'svhn' and FLAGS.architecture == 'resnet_cifar_model':
     #  FLAGS.emb_size = 64
@@ -185,6 +194,8 @@ def main(_):
     image_shape_crop = image_shape
     c_test_imgs = test_images
     c_train_imgs = train_images
+    c_train_images_svm = train_images_svm
+    c_test_images_svm = test_images_svm
 
     # crop images to some random region. Intuitively, images should belong to the same cluster,
     # even if a part of the image is missing
@@ -194,6 +205,8 @@ def main(_):
         image_shape_crop = [64, 64, 3]
         c_test_imgs = test_images[:, 16:80, 16:80]
         c_train_imgs = train_images[:, 16:80, 16:80]
+        c_train_images_svm = c_train_images_svm[:, 16:80, 16:80]
+        c_test_images_svm = c_test_images_svm[:, 16:80, 16:80]
 
     def aug(image):
         return apply_augmentation(image, target_shape=image_shape_crop, params=dataset_tools.augmentation_params)
@@ -443,15 +456,19 @@ def main(_):
 
             if FLAGS.svm_test_interval is not None and step % FLAGS.svm_test_interval == 0 and step > 0:
                 print('Step: %d -----------------------' % step)
-                svm_test_score, _ = model.train_and_eval_svm(c_train_imgs, train_labels_svm, c_test_imgs, test_labels,
+                svm_test_score, _ = model.train_and_eval_svm(c_train_images_svm,
+                                                             train_labels_svm,
+                                                             c_test_images_svm,
+                                                             test_labels_svm,
                                                              sess, num_samples=5000)
                 # this is training svm on raw input (train) images?
                 print('svm score:', svm_test_score)
 
                 # this is training svm on learned embeddings of (train) images
-                test_pred = model.classify(c_test_imgs, sess)
-                train_pred = model.classify(c_train_imgs, sess)
-                svm_test_score, _ = model.train_and_eval_svm_on_preds(train_pred, train_labels_svm, test_pred, test_labels,
+                test_pred = model.classify(c_test_images_svm, sess)
+                train_pred = model.classify(c_train_images_svm, sess)
+                svm_test_score, _ = model.train_and_eval_svm_on_preds(
+                    train_pred, train_labels_svm, test_pred, test_labels_svm,
                                                              sess, num_samples=5000)
                 print('svm score on logits:', svm_test_score)
                 acc_lists["svm_test_score"].append(svm_test_score)
