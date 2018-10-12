@@ -187,7 +187,7 @@ def main(_):
         train_images = np.vstack([train_images, test_images])
         test_images = np.vstack([train_images, test_images])
         print(train_labels_svm.shape)
-        print(test_images.shape)
+        print(test_labels.shape)
         test_labels = np.vstack([train_labels_svm, test_labels])
 
     #if FLAGS.dataset == 'svhn' and FLAGS.architecture == 'resnet_cifar_model':
