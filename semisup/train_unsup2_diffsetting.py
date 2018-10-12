@@ -188,7 +188,9 @@ def main(_):
         test_images = np.vstack([train_images, test_images])
         print(train_labels_svm.shape)
         print(test_labels.shape)
-        test_labels = np.vstack([train_labels_svm, test_labels])
+        test_labels = np.concatenate([train_labels_svm, test_labels])
+        print(test_labels.shape)
+        exit(1)
 
     #if FLAGS.dataset == 'svhn' and FLAGS.architecture == 'resnet_cifar_model':
     #  FLAGS.emb_size = 64
