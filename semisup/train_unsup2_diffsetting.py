@@ -185,10 +185,8 @@ def main(_):
         # no distinction between training and testing sets
         # same in our code and deepcluster
         train_images = np.vstack([train_images, test_images])
-        test_images = np.vstack([train_images, test_images])
+        test_images = train_images
         test_labels = np.concatenate([train_labels_svm, test_labels])
-        print(test_images.shape)
-        print(test_labels.shape)
 
     #if FLAGS.dataset == 'svhn' and FLAGS.architecture == 'resnet_cifar_model':
     #  FLAGS.emb_size = 64
@@ -486,11 +484,7 @@ def main(_):
                 test_pred = model.classify(c_test_imgs, sess, extra_feed_dict).argmax(-1)
                 print(datetime.now())
                 sys.stdout.flush()
-
-                print("about to calc: pred, labels:")
-                print(test_pred.shape)
-                print(test_labels.shape)
-
+                
                 nmi = semisup.calc_nmi(test_pred, test_labels)
 
                 # the real acc
